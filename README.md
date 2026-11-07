@@ -24,7 +24,7 @@ Based in Tunisia — Looking for a 6-month end-of-studies internship starting Fe
 
 | Platform | Machines / Rooms | Easy | Medium | Hard |
 |----------|-----------------|------|--------|------|
-| TryHackMe | 14 | 5 | 9 | 0 |
+| TryHackMe | 14 | 6 | 8 | 0 |
 | HackTheBox | 3 | 2 | 1 | 0 |
 | Blue Team Labs | 0 | — | — | — |
 
@@ -56,7 +56,7 @@ cybersec-writeups/
 | 2026-10-07 | [Abducted](HackTheBox/Medium/abducted-2026-10-07.md) | Hack The Box | Medium | `#samba` `#command-injection` `#rclone` `#credential-reuse` `#wide-links` `#polkit` `#systemd` `#privesc` `#linux` |
 | 2026-06-10 | [VulnNet: Active](TryHackMe/Medium/VulnNet_Active-2026-06-10.md) | TryHackMe | Medium | `#redis` `#ntlmv2` `#responder` `#smb` `#ps1-hijack` `#SeImpersonatePrivilege` `#GodPotato` `#windows` `#activedirectory` |
 | 2026-06-09 | [Poster](TryHackMe/Medium/Poster-2026-06-09.md) | TryHackMe | Medium | `#postgresql` `#metasploit` `#rce` `#privesc` `#credential-harvesting` `#linux` |
-| 2026-06-06 | [Dumping Router Firmware](TryHackMe/Medium/Dumping_Router_Firmware-2026-06-06.md) | TryHackMe | Easy | `#firmware` `#iot` `#embedded-linux` `#binwalk` `#jffs2` `#hardware` |
+| 2026-06-06 | [Dumping Router Firmware](TryHackMe/Easy/Dumping_Router_Firmware-2026-06-06.md) | TryHackMe | Easy | `#firmware` `#iot` `#embedded-linux` `#binwalk` `#jffs2` `#hardware` |
 | 2026-06-05 | [Dogcat](TryHackMe/Medium/Dogcat-2026-06-05.md) | TryHackMe | Medium | `#linux` `#web` `#lfi` `#logpoisoning` `#php` `#docker` `#privesc` `#rce` |
 | 2026-06-05 | [Attacktive Directory](TryHackMe/Medium/Attacktive_Directory-2026-06-05.md) | TryHackMe | Medium | `#activedirectory` `#kerberos` `#asreproasting` `#dcsync` `#passthehash` |
 | 2026-05-31 | [Creative](TryHackMe/Medium/Creative-2026-05-31.md) | TryHackMe | Medium | `#ssrf` `#vhost` `#ld_preload` `#privesc` |

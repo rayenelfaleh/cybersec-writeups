@@ -1,6 +1,9 @@
 # Anonymous — TryHackMe — Medium
 
-> **Date:** 2026-05-30 **Platform:** TryHackMe **Difficulty:** Medium **Tags:** `#linux` `#ftp` `#smb` `#cronjob` `#suid` `#privesc`
+> **Date:** 2026-05-30\
+> **Platform:** TryHackMe\
+> **Difficulty:** Medium\
+> **Tags:** `#linux` `#ftp` `#smb` `#cronjob` `#suid` `#privesc`
 
 ---
 

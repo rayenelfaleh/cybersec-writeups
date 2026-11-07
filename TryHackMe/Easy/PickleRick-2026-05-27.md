@@ -1,6 +1,9 @@
 # Pickle Rick — TryHackMe — Easy
 
-> **Date:** 2026-05-27 **Platform:** TryHackMe **Difficulty:** Easy **Tags:** `#linux` `#rce` `#web` `#privesc` `#credentials`
+> **Date:** 2026-05-27\
+> **Platform:** TryHackMe\
+> **Difficulty:** Easy\
+> **Tags:** `#linux` `#rce` `#web` `#privesc` `#credentials`
 
 ---
 
@@ -74,7 +77,7 @@ curl http://10.114.187.58/index.html
 
 ### Web Command Panel — RCE
 
-Logged in at `/login.php` with credentials above. Portal exposes a command execution panel → **unauthenticated RCE as www-data**.
+Logged in at `/login.php` with credentials above. Portal exposes a command execution panel → **authenticated RCE as www-data**.
 
 ```bash
 whoami       # www-data
@@ -141,7 +144,7 @@ sudo less /root/3rd.txt
 ## Lessons Learned
 
 - `robots.txt` and HTML source code are often overlooked, but they can expose sensitive information like credentials — always check them before anything else.
-- Restricted commands like `cat` can always be bypassed with alternatives such as `less`, `more`, or `grep` — knowing multiple ways to achieve the same result is essential in real engagements.
+- The command filter blocked `cat` but allowed `less` to read the same files. Blocking individual command names did not prevent file access on this machine.
 - `sudo -l` should be the first command after getting a shell — `NOPASSWD: ALL` is a critical misconfiguration that instantly gives root access and is surprisingly common on poorly configured systems.
 
 ---

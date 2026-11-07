@@ -1,12 +1,15 @@
 # Attacktive Directory — TryHackMe — Medium
 
-> **Date:** 2026-06-05 **Platform:** TryHackMe **Difficulty:** Medium **Tags:** #windows #activedirectory #kerberos #asreproasting #dcsync #passthehash #impacket #evil-winrm
+> **Date:** 2026-06-05\
+> **Platform:** TryHackMe\
+> **Difficulty:** Medium\
+> **Tags:** `#windows` `#activedirectory` `#kerberos` `#asreproasting` `#dcsync` `#passthehash` `#impacket` `#evil-winrm`
 
 ---
 
 ## Summary
 
-Windows Domain Controller running Active Directory. Initial enumeration revealed the domain `spookysec.local`. AS-REP Roasting against `svc-admin` (Kerberos pre-auth disabled) yielded a crackable TGT hash. Credentials from a backup SMB share allowed a DCSync attack via secretsdump, dumping all NTLM hashes. Administrator access obtained via Pass-the-Hash with evil-winrm.
+Windows Domain Controller running Active Directory. Initial enumeration revealed the domain `spookysec.local`. AS-REP Roasting against `svc-admin` (Kerberos pre-auth disabled) yielded an AS-REP encrypted response for offline password cracking. Credentials from a backup SMB share allowed a DCSync attack via secretsdump, dumping all NTLM hashes. Administrator access obtained via Pass-the-Hash with evil-winrm.
 
 ---
 
@@ -46,7 +49,7 @@ cd /opt/impacket/examples
 python3 GetNPUsers.py spookysec.local/ -dc-ip 10.130.188.49 -no-pass -usersfile /root/userlist.txt 2>/dev/null | grep -v "KDC_ERR"
 ```
 
-Result: `svc-admin` has Kerberos pre-authentication disabled → TGT hash returned
+Result: `svc-admin` has Kerberos pre-authentication disabled → AS-REP encrypted response returned
 
 ```
 $krb5asrep$23$svc-admin@SPOOKYSEC.LOCAL:75691de96a3348cab50691f47fca8c12$...
@@ -127,7 +130,7 @@ backup:1118:aad3b435b51404eeaad3b435b51404ee:19741bde08e135f4b40f1ca9aab45538:::
 a-spooks:1601:aad3b435b51404eeaad3b435b51404ee:0e0363213e37b94221497260b0bcb4fc:::
 ```
 
-Notable accounts: `a-spooks` shares the same NTLM hash as `Administrator` → hidden admin account.
+Notable accounts: `a-spooks` shares the same NTLM hash as `Administrator`, indicating password reuse. Matching password hashes do not establish group membership or administrator privileges.
 
 ### Pass-the-Hash → Domain Admin Shell
 
@@ -156,23 +159,23 @@ type "C:\Users\Administrator\Desktop\root.txt"
 
 ## Lessons Learned
 
-🔴 Côté Attaquant (Offensive)
+### 🔴 Côté Attaquant (Offensive)
 
-Port 88 ouvert = DC confirmé → tester AS-REP Roasting immédiatement → GetNPUsers.py sur une wordlist d'utilisateurs est le premier réflexe. Un compte avec UF_DONT_REQUIRE_PREAUTH rend le TGT hash crackable offline.
-Les shares SMB non-standards sont toujours prioritaires → ADMIN$, C$, SYSVOL sont standards et souvent inaccessibles. Un share custom comme backup est le vrai vecteur — toujours énumérer et tenter l'accès avec chaque set de credentials obtenu.
-Credentials en base64 dans un fichier = encoding, pas chiffrement → réflexe automatique : base64 -d sur tout blob suspect dans un share ou un fichier de config.
-DCSync (DRSUAPI) = dump complet de NTDS.DIT sans toucher le disque du DC → si un compte a des droits de réplication, secretsdump.py suffit pour extraire tous les hashes du domaine. Extrêmement discret en environnement réel.
-Pass-the-Hash bypass total → pas besoin du mot de passe en clair. Le hash NTLM suffit pour evil-winrm, smbclient, psexec. Toujours tenter PtH avant de cracker.
-Comptes partageant le même hash NTLM qu'Administrator → a-spooks était un compte admin caché identique à Administrator. Sans le dump complet, il aurait été invisible.
+- Port 88 ouvert = DC confirmé → tester AS-REP Roasting immédiatement → GetNPUsers.py sur une wordlist d'utilisateurs est le premier réflexe. Un compte avec UF_DONT_REQUIRE_PREAUTH permet de récupérer une réponse AS-REP pour tenter de casser le mot de passe hors ligne.
+- Les shares SMB non-standards sont toujours prioritaires → ADMIN$, C$, SYSVOL sont standards et souvent inaccessibles. Un share custom comme backup est le vrai vecteur — toujours énumérer et tenter l'accès avec chaque set de credentials obtenu.
+- Credentials en base64 dans un fichier = encoding, pas chiffrement → réflexe automatique : base64 -d sur tout blob suspect dans un share ou un fichier de config.
+- DCSync (DRSUAPI) = dump complet de NTDS.DIT sans toucher le disque du DC → si un compte a des droits de réplication, secretsdump.py suffit pour extraire tous les hashes du domaine. Extrêmement discret en environnement réel.
+- Pass-the-Hash bypass total → pas besoin du mot de passe en clair. Le hash NTLM suffit pour evil-winrm, smbclient, psexec. Toujours tenter PtH avant de cracker.
+- Comptes partageant le même hash NTLM → `a-spooks` et `Administrator` réutilisent le même mot de passe. Vérifier séparément les groupes et droits de chaque compte avant de conclure qu'il est administrateur.
 
 
-🔵 Côté Défenseur (Defensive / Blue Team)
+### 🔵 Côté Défenseur (Defensive / Blue Team)
 
-Désactiver la pré-authentification Kerberos uniquement si absolument nécessaire — chaque compte avec DONT_REQUIRE_PREAUTH est une cible AS-REP Roasting.
-Auditer les droits de réplication AD — seuls les DCs légitimes doivent avoir les privilèges DRSUAPI. Un compte backup avec ces droits est une misconfiguration critique.
-Ne jamais stocker des credentials dans des shares SMB, même encodés en base64.
-Monitorer les événements 4662 (accès objet AD avec droits de réplication) — signature directe d'un DCSync.
-Auditer les comptes partageant le même hash NTLM — signe de backdoors ou de comptes clonés.
+- Désactiver la pré-authentification Kerberos uniquement si absolument nécessaire — chaque compte avec DONT_REQUIRE_PREAUTH est une cible AS-REP Roasting.
+- Auditer les droits de réplication AD — seuls les DCs légitimes doivent avoir les privilèges DRSUAPI. Un compte backup avec ces droits est une misconfiguration critique.
+- Ne jamais stocker des credentials dans des shares SMB, même encodés en base64.
+- Monitorer les événements 4662 (accès objet AD avec droits de réplication) — signature directe d'un DCSync.
+- Auditer les comptes partageant le même hash NTLM — indicateur de réutilisation de mot de passe à investiguer.
 
 ---
 
@@ -196,3 +199,5 @@ nmap → port 88 (Kerberos) → spookysec.local DC
 - HackTricks AS-REP Roasting: https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/asreproast
 - HackTricks DCSync: https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/dcsync
 - Impacket GitHub: https://github.com/fortra/impacket
+- [GetNPUsers AS-REP export — Impacket source](https://github.com/fortra/impacket/blob/master/examples/GetNPUsers.py)
+- [Windows password storage — Microsoft](https://learn.microsoft.com/en-us/windows-server/security/kerberos/passwords-technical-overview)

@@ -1,6 +1,9 @@
 # Dumping Router Firmware — TryHackMe — Easy
 
-> **Date:** 2025-06-06 **Platform:** TryHackMe **Difficulty:** Easy **Tags:** `#firmware` `#iot` `#embedded-linux` `#binwalk` `#jffs2` `#hardware`
+> **Date:** 2026-06-06\
+> **Platform:** TryHackMe\
+> **Difficulty:** Easy\
+> **Tags:** `#firmware` `#iot` `#embedded-linux` `#binwalk` `#jffs2` `#hardware`
 
 ---
 
@@ -141,7 +144,7 @@ cd /mnt/jffs2_file/
 |`opt`|`/tmp/opt`|Writable at runtime via tmpfs|
 |`var`|`/tmp/var`|Writable at runtime via tmpfs|
 
-> `mnt`, `opt`, and `var` all link to `/tmp` because the JFFS2 flash filesystem is read-only; writable paths are redirected to RAM at runtime.
+> `mnt`, `opt`, and `var` redirect runtime data into `/tmp`. These symlinks alone do not establish whether the JFFS2 filesystem is mounted read-only.
 
 ### `/bin/`
 
@@ -197,19 +200,19 @@ Three network folders found:
 
 ## Lessons Learned
 
-🔴 Côté Attaquant (Offensive)
+### 🔴 Côté Attaquant (Offensive)
 
-strings comme premier réflexe → avant tout outil complexe, strings sur un binaire firmware donne immédiatement le nom du device, l'OS, les messages de boot. Coût : zéro. Valeur : énorme.
-binwalk récursif → une extraction ratée n'est pas une impasse. Toujours relancer binwalk -e sur les blobs extraits — le fichier 6870 semblait inutilisable mais a quand même livré la version du kernel.
-Monter JFFS2 manuellement → workflow non-trivial (mknod, modprobe, dd, mount -t jffs2) à mémoriser. S'applique à n'importe quel firmware IoT/router extrait physiquement via UART, JTAG ou lecture de chip flash.
-/etc en priorité → Dropbear config, version firmware, build date, credentials par défaut — tout ce qui est exploitable en engagement réel est là.
+- strings comme premier réflexe → avant tout outil complexe, strings sur un binaire firmware donne immédiatement le nom du device, l'OS, les messages de boot. Coût : zéro. Valeur : énorme.
+- binwalk récursif → une extraction ratée n'est pas une impasse. Toujours relancer binwalk -e sur les blobs extraits — le fichier 6870 semblait inutilisable mais a quand même livré la version du kernel.
+- Monter JFFS2 manuellement → workflow non-trivial (mknod, modprobe, dd, mount -t jffs2) à mémoriser. S'applique à n'importe quel firmware IoT/router extrait physiquement via UART, JTAG ou lecture de chip flash.
+- /etc en priorité → Dropbear config, version firmware, build date, credentials par défaut — tout ce qui est exploitable en engagement réel est là.
 
 
-🔵 Côté Défenseur (Defensive / Blue Team)
+### 🔵 Côté Défenseur (Defensive / Blue Team)
 
-Un firmware public = surface d'analyse complète pour un attaquant. Les versions, services exposés et configurations par défaut ne devraient jamais être trivialement extractibles.
-BusyBox = environnement minimal → sur un device réel compromis, adapter les techniques (pas de wget, pas de gcc, parfois pas de bash).
-Désactiver Dropbear ou changer les credentials par défaut est critique — ils sont lisibles statiquement dans le firmware.
+- Un firmware public = surface d'analyse complète pour un attaquant. Les versions, services exposés et configurations par défaut ne devraient jamais être trivialement extractibles.
+- BusyBox = environnement minimal → sur un device réel compromis, adapter les techniques (pas de wget, pas de gcc, parfois pas de bash).
+- Désactiver Dropbear ou changer les credentials par défaut est critique — ils sont lisibles statiquement dans le firmware.
 
 ---
 

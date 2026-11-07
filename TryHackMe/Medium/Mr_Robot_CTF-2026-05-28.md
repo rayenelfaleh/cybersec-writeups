@@ -1,6 +1,9 @@
 # Mr Robot CTF — TryHackMe — Medium
 
-> **Date:** 2026-05-28 **Platform:** TryHackMe **Difficulty:** Medium **Tags:** `#linux` `#wordpress` `#hydra` `#rce` `#md5` `#suid` `#nmap` `#privesc`
+> **Date:** 2026-05-28\
+> **Platform:** TryHackMe\
+> **Difficulty:** Medium\
+> **Tags:** `#linux` `#wordpress` `#hydra` `#rce` `#md5` `#suid` `#nmap` `#privesc`
 
 ---
 

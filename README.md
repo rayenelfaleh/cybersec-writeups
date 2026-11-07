@@ -25,7 +25,7 @@ Based in Tunisia — Looking for a 6-month end-of-studies internship starting Fe
 | Platform | Machines / Rooms | Easy | Medium | Hard |
 |----------|-----------------|------|--------|------|
 | TryHackMe | 14 | 5 | 9 | 0 |
-| HackTheBox | 2 | 1 | 1 | 0 |
+| HackTheBox | 3 | 2 | 1 | 0 |
 | Blue Team Labs | 0 | — | — | — |
 
 ---
@@ -52,6 +52,7 @@ cybersec-writeups/
 
 | Date | Name | Platform | Difficulty | Tags |
 |------|------|----------|------------|------|
+| 2026-11-07 | [Cohort (user flag)](HackTheBox/Easy/cohort-user-flag-writeup.md) | HackTheBox | Easy | `#linux` `#web` `#ssrf` `#marimo` `#websocket` |
 | 2026-10-07 | Abducted | Hack The Box | Medium | `#samba` `#command-injection` `#rclone` `#credential-reuse` `#wide-links` `#polkit` `#systemd` `#privesc` `#linux` |
 | 2026-06-10 | VulnNet: Active | TryHackMe | Medium | `#redis` `#ntlmv2` `#responder` `#smb` `#ps1-hijack` `#SeImpersonatePrivilege` `#GodPotato` `#windows` `#activedirectory` |
 | 2026-06-09 | Poster | TryHackMe | Medium | `#postgresql` `#metasploit` `#rce` `#privesc` `#credential-harvesting` `#linux` |
